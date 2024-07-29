@@ -1,0 +1,32 @@
+
+.nav {
+    background-color: #558ec0;
+    padding: 1rem;
+   
+  }
+  
+  .nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex; 
+  justify-content: space-between; 
+  }
+  
+  .nav li {
+    display: inline;
+    margin-right: 1rem;
+  }
+  
+  .nav a {
+    text-decoration: none;
+    color: #040404;
+  }
+  
+  .nav a:hover {
+    text-decoration: underline;
+  }
+.panel{
+  background-color: #040404;
+  width: 100%;
+  height: 100%;
+}
