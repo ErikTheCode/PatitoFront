@@ -8,12 +8,13 @@ import {
   Form,
   Tag,
   notification,
+  Card,
   Col,
   Row,
   List,
   Descriptions,
 } from "antd";
-import'./NuevoPedido.css';
+import "./NuevoPedido.css";
 const NuevoPedido = () => {
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
@@ -85,6 +86,28 @@ const NuevoPedido = () => {
     setSelectedCamionetas(value);
   };
 
+  const aplicarDescuento = (precioBruto, porcentaje) => {
+    const descuento = (precioBruto * porcentaje) / 100;
+    return Number(precioBruto - descuento);
+  };
+
+  const detalleVentaCamioneta = (item) => {
+    return (
+      <>
+        <p>Modelo: {item?.modelo}</p>
+        <p>Precio bruto: { `$${Number(item?.precio ).toLocaleString("en-US")}`}</p>
+        <p>Descuento: { formData?.isDecuento === 1 ?  `${Number(item?.descuento ).toLocaleString("en-US")}%`: "No"}</p>
+        <p>
+          Precio final:{" "}
+          {formData?.isDecuento === 1
+            ? `$${aplicarDescuento(item?.precio, item?.descuento).toLocaleString("en-US")}`
+            : Number(item?.precio).toLocaleString("en-US")}
+        </p>
+      </>
+    );
+  };
+  const seletedCliente = clientes.find((c) => c.id === formData?.clienteId);
+  const seletedVendedor = vendedores.find((c) => c.id === formData?.vendedorId);
   const pasos = [
     {
       title: "Cliente",
@@ -136,7 +159,7 @@ const NuevoPedido = () => {
             </Col>
             <Col xs={24} sm={10}>
               <Form.Item label="Aplica descuento" name="isDecuento">
-                <Select placeholder="Selecciona un vendedor">
+                <Select placeholder="Selecciona">
                   <Option key={1} value={1}>
                     Descuento
                   </Option>
@@ -188,22 +211,46 @@ const NuevoPedido = () => {
       title: "Confirmar",
       content: (
         <>
-          <Descriptions title="Resumen del Pedido" bordered>
-            <Descriptions.Item label="Cliente">
-              {formData.clienteId}
-            </Descriptions.Item>
-            <Descriptions.Item label="Vendedor">
-              {formData.vendedorId}
-            </Descriptions.Item>
-          </Descriptions>
+          <div>
+            <Descriptions title="Detalles del Cliente" bordered>
+              <Descriptions.Item label="Nombre">
+                {seletedCliente
+                  ? seletedCliente.nombreCompleto
+                  : "Cliente no encontrado"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">
+                {seletedCliente ? seletedCliente.email : "N/A"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Teléfono">
+                {seletedCliente ? seletedCliente.telefono : "N/A"}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Descriptions
+              title="Detalles del Vendedor"
+              bordered
+              style={{ marginTop: "20px" }}
+            >
+              <Descriptions.Item label="Nombre">
+                {seletedVendedor
+                  ? seletedVendedor.nombreCompleto
+                  : "Vendedor no encontrado"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">
+                {seletedVendedor ? seletedVendedor.email : "N/A"}
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
 
           <List
+            style={{ marginTop: "20px" }}
+            grid={{ gutter: 16, column: 4 }}
             dataSource={camionetas.filter((item) =>
               selectedCamionetas.includes(item.id.toString())
             )}
             renderItem={(item) => (
               <List.Item>
-                {`${item.marca}-${item.modelo} $${item.precio}`}
+                <Card title={item.marca}> {detalleVentaCamioneta (item) }</Card>
               </List.Item>
             )}
           />
@@ -304,42 +351,42 @@ const NuevoPedido = () => {
   return (
     <div className="panel">
       <div className="sub-panel">
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          requiredMarkValue: requiredMark,
-        }}
-        requiredMark={customizeRequiredMark}
-        onFinish={onFinish}
-      >
-        <Steps current={vista} items={items} />
-        <div style={contentStyle}>{pasos[vista].content}</div>
-        <div
-          style={{
-            marginTop: 24,
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            requiredMarkValue: requiredMark,
           }}
+          requiredMark={customizeRequiredMark}
+          onFinish={onFinish}
         >
-          {vista < pasos.length - 1 && (
-            <Button type="primary" onClick={() => next()}>
-              Siguiente
-            </Button>
-          )}
+          <Steps current={vista} items={items} />
+          <div style={contentStyle}>{pasos[vista].content}</div>
+          <div
+            style={{
+              marginTop: 24,
+            }}
+          >
+            {vista < pasos.length - 1 && (
+              <Button type="primary" onClick={() => next()}>
+                Siguiente
+              </Button>
+            )}
 
-          {vista > 0 && (
-            <Button
-              style={{
-                margin: "0 8px",
-              }}
-              onClick={() => prev()}
-            >
-              Volver
-            </Button>
-          )}
-        </div>
-      </Form>
+            {vista > 0 && (
+              <Button
+                style={{
+                  margin: "0 8px",
+                }}
+                onClick={() => prev()}
+              >
+                Volver
+              </Button>
+            )}
+          </div>
+        </Form>
       </div>
-    
+
       {contextHolder}
     </div>
   );
