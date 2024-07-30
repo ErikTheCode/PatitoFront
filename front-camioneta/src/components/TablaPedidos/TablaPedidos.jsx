@@ -62,6 +62,11 @@ const TablaPedidos = ({ dataPedidos, isLoading }) => {
       key: "estatus",
     },
     {
+      title: "Fecha creación",
+      dataIndex: "fecha_creacion",
+      key: "fecha_creacion",
+    },
+    {
       title: "No. Camionetas",
       dataIndex: "numero_de_camionetas",
       key: "numero_de_camionetas",
